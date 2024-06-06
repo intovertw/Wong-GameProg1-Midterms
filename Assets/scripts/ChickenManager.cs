@@ -10,6 +10,8 @@ public class ChickenManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        ManagerGUI.total += 1;
+        ManagerGUI.counts[0] += 1;
         for (int i = 0; i < 4; i++)
         {
             if(i == 0)
@@ -33,29 +35,34 @@ public class ChickenManager : MonoBehaviour
 
     IEnumerator ChickenCoroutine()
     {
+        int random;
+
+        if (ManagerGUI.total == 1)
+        {
+            random = 2;
+        }
+        else
+        {
+            random = Random.Range(1, 3);
+        }
+
         for (int i = 0; i < 2; i++)
         {
             //first loop, egg spawns +10s
             //second loop, chick grows to adult +10s
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(10f);
             //chick to adult added time and randomizes adult gender
             if (i == 1)
             {
-                Debug.Log("i == 1 is running");
+                //chick to adult
+                chickenStages[i + random].SetActive(true);
+                chickenStages[i].SetActive(false);
+                ManagerGUI.counts[i + random] += 1;
+                ManagerGUI.counts[i] -= 1;
 
-                /**if (firstTime == true)
-                {
-                    chickenStages[i].SetActive(false);
-                    chickenStages[i + 2].SetActive(true);
-                }
-                else
-                {**/
-                    chickenStages[i].SetActive(false);
-                    chickenStages[i + Random.Range(1, 2)].SetActive(true);
-                //}
-                
-                yield return new WaitForSeconds(3f); //+30s
+                yield return new WaitForSeconds(30f); //+30s
 
+                //if hen, this lay eggs
                 if (chickenStages[3].activeSelf == true)
                 {
                     for (int j = 0; j < Random.Range(2, 10); j++)
@@ -64,15 +71,17 @@ public class ChickenManager : MonoBehaviour
                     }
                 }
 
-                yield return new WaitForSeconds(1f); //+10s
+                yield return new WaitForSeconds(10f); //+10
+                ManagerGUI.counts[i + random] -= 1;
                 Destroy(chickenLife);
             }
             //egg to chick
             else
             {
-                Debug.Log("else is running");
                 chickenStages[i].SetActive(false);
                 chickenStages[i + 1].SetActive(true);
+                ManagerGUI.counts[i] -= 1;
+                ManagerGUI.counts[i + 1] += 1;
             }
         }
     }
